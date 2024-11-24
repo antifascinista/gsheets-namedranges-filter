@@ -1,5 +1,4 @@
-// gsheets-namedranges-filter
-// background.js
+//  gsheets-namedranges-filter	/  0.1 	/	background.js
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'saveFilters') {
