@@ -1,0 +1,12 @@
+// README
+
+Sheet name and current filter state should automatically save/load from local browser storage.
+Sometimes Google's caching sucks and the list doesn't refresh, just uncheck/recheck a box.
+
+EACH BLUE = show only matching filtered items
+ANY BLUE ON = always hides unfiltered items
+YELLOW = hide item from main list
+ORANGE = filter a suffix instead
+PURPLE = case-sensitive
+" + " = add filter
+" trash" = delete filter, requires double click (right click to unclick)
