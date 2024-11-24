@@ -1,7 +1,7 @@
 {
-  "name": "gsheets-namedranges-filter"
-  "version": "1.0",
-  "description": "GSheets Named Ranged sidebar filter",
+  "name": "gsheets-namedranges-filter",
+  "version": "0.1",
+  "description": "Filter named ranges sidebar based on prefix, suffix, case-s",
   "manifest_version": 3,
   "permissions": ["storage"],
   "host_permissions": ["https://docs.google.com/*"],
@@ -16,3 +16,4 @@
     }
   ]
 }
+
