@@ -1,5 +1,4 @@
-// gsheets-namedranges-filter
-// content.js
+// gsheets-namedranges-filter	/	0.1 	/	content.js
 
 (function() {
   let observer;
@@ -59,7 +58,7 @@
     });
   }
 
-// filter named ranges based on pre / suf
+// filter named ranges based on selections
   function filterNamedRanges() {
     const namedRangeElements = document.querySelectorAll('.waffle-named-ranges-pill');
     const filterRows = document.querySelectorAll('.custom-filter-row');
@@ -96,7 +95,7 @@
         let rangeName = rangeNameElement.textContent.trim();
         let showElement = false;
 
-        // Check if range matches any active filters
+        // match active filter
         let matchesActiveFilter = false;
         if (activeFilters.length > 0) {
           matchesActiveFilter = activeFilters.some(filter => {
@@ -114,11 +113,11 @@
           });
           showElement = matchesActiveFilter;
         } else {
-          // No active filters; default to showing the range
+          // show all if no filters active
           showElement = true;
         }
 
-        // Check if range matches any passive filters
+        // match passive
         if (passiveFilters.length > 0) {
           const matchesPassiveFilter = passiveFilters.some(filter => {
             let prefix = filter.prefix;
@@ -133,7 +132,7 @@
               return name.startsWith(prefix);
             }
           });
-          // Hide the range if it matches a passive filter and does not match any active filter
+		  // hide if matches passive but no match active
           if (matchesPassiveFilter && !matchesActiveFilter) {
             showElement = false;
           }
@@ -144,31 +143,32 @@
     });
   }
 
-  // update the add / del buttons
-  function updateButtons() {
+
+  // new filter container/row
+  function addFilterRow(filter = {}) {
     const filterContainer = document.querySelector('.custom-filter-container');
-    const filterRows = filterContainer.querySelectorAll('.custom-filter-row');
-    filterRows.forEach((row, index) => {
-      const isFirstRow = index === 0;
-      const isLastRow = index === filterRows.length - 1;
-      const buttonContainer = row.querySelector('.button-container');
-      buttonContainer.innerHTML = '';
-
-      // delete button
-      if (!isFirstRow) {
-        const deleteButton = createDeleteButton(row);
-        buttonContainer.appendChild(deleteButton);
-      }
-
-      // add button
-      if (isLastRow) {
-        const addButton = createAddButton();
-        buttonContainer.appendChild(addButton);
-      }
-    });
+    const newRow = createFilterRow(filter);
+    filterContainer.appendChild(newRow);
+    updateButtons();
   }
 
-// create add / del
+
+// create add / del buttons
+
+  function createAddButton() {
+    const addButton = document.createElement('div');
+    addButton.style.width = '24px';
+    addButton.style.height = '24px';
+    addButton.style.marginLeft = '8px';
+    addButton.style.cursor = 'pointer';
+    addButton.title = 'Add filter';
+    addButton.innerHTML = '<span style="font-size:24px;">+</span>';
+    addButton.addEventListener('click', () => {
+      addFilterRow();
+      saveFilters();
+    });
+    return addButton;
+  }
 
   function createDeleteButton(row) {
     const deleteButton = document.createElement('div');
@@ -196,22 +196,33 @@
     return deleteButton;
   }
 
-  function createAddButton() {
-    const addButton = document.createElement('div');
-    addButton.style.width = '24px';
-    addButton.style.height = '24px';
-    addButton.style.marginLeft = '8px';
-    addButton.style.cursor = 'pointer';
-    addButton.title = 'Add filter';
-    addButton.innerHTML = '<span style="font-size:24px;">+</span>';
-    addButton.addEventListener('click', () => {
-      addFilterRow();
-      saveFilters();
+
+  // fix up add / del after row shuffle
+  function updateButtons() {
+    const filterContainer = document.querySelector('.custom-filter-container');
+    const filterRows = filterContainer.querySelectorAll('.custom-filter-row');
+    filterRows.forEach((row, index) => {
+      const isFirstRow = index === 0;
+      const isLastRow = index === filterRows.length - 1;
+      const buttonContainer = row.querySelector('.button-container');
+      buttonContainer.innerHTML = '';
+
+      // del button
+      if (!isFirstRow) {
+        const deleteButton = createDeleteButton(row);
+        buttonContainer.appendChild(deleteButton);
+      }
+
+      // add button
+      if (isLastRow) {
+        const addButton = createAddButton();
+        buttonContainer.appendChild(addButton);
+      }
     });
-    return addButton;
   }
 
-// homemade waffle
+
+// mix and sort waffle batter
   function createFilterRow(filter = {}) {
 	  
     // copy gsheets style
@@ -296,7 +307,7 @@
       saveFilters();
     });
 
-    // CASE-SENSE ORANGE
+    // CASE-S PURPLE
     const caseCheckbox = document.createElement('input');
     caseCheckbox.type = 'checkbox';
     caseCheckbox.classList.add('custom-case-checkbox');
@@ -315,7 +326,7 @@
       saveFilters();
     });
 
-    // add / del container
+    // add / del buttons
     const buttonContainer = document.createElement('div');
     buttonContainer.classList.add('button-container');
     buttonContainer.style.display = 'flex';
@@ -332,7 +343,7 @@
     return filterRow;
   }
 
-  // input field empty
+  // input field if empty text
   function getPlaceholderText(filter) {
     const { suffix, caseSensitive } = filter;
     let placeholder = '';
@@ -342,14 +353,6 @@
       placeholder = caseSensitive ? 'PreFix' : 'prefix';
     }
     return placeholder;
-  }
-
-  // new filter row
-  function addFilterRow(filter = {}) {
-    const filterContainer = document.querySelector('.custom-filter-container');
-    const newRow = createFilterRow(filter);
-    filterContainer.appendChild(newRow);
-    updateButtons();
   }
 
   // filter options
@@ -364,6 +367,7 @@
 
       // load filter state
       loadFilters(filters => {
+		  
         // create initial row
         if (filters.length === 0) {
           filters.push({});  // default 1 unremoveable filter
@@ -373,7 +377,7 @@
           filterContainer.appendChild(filterRow);
         });
 
-        // instert after 'Add a range +'
+        // insert and pin under native 'Add a range +'
         addRangeElement.parentNode.insertBefore(filterContainer, addRangeElement.nextSibling);
 
   // first go
@@ -384,7 +388,7 @@
     }
   }
 
-  // observed named ranges container
+  // observe named ranges container
   function setupNamedRangesObserver() {
     const namedRangesContainer = document.getElementById('waffle-named-ranges-container');
     if (namedRangesContainer) {
@@ -442,7 +446,7 @@
     }
   };
 
-  // observ doc body
+  // observe doc body
   function startObserver() {
     const targetNode = document.body;
     const config = { childList: true, subtree: true };
@@ -451,7 +455,7 @@
     observer.observe(targetNode, config);
   }
 
-  // sidebar wellness check ??pointless??
+  // sidebar wellness check ??pointless??carrying sometimes??
   function checkForSidebar() {
     if (document.querySelector('.waffle-sidebar-container')) {
       initialize();
