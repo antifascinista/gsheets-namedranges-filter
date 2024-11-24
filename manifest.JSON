@@ -1,7 +1,7 @@
 {
   "name": "gsheets-namedranges-filter"
   "version": "1.0",
-  "description": "G.Sheets Named Ranged sidebar filter",
+  "description": "GSheets Named Ranged sidebar filter",
   "manifest_version": 3,
   "permissions": ["storage"],
   "host_permissions": ["https://docs.google.com/*"],
